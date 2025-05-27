@@ -203,6 +203,11 @@ return [
         'state'     => 'estado',
         'street'    => 'rua',
         'subject'   => 'assunto',
+        'task' => [
+            'title' => 'título',
+            'description' => 'descrição',
+            'status' => 'status',
+        ],
         'text'      => 'texto',
         'time'      => 'hora',
         'title'     => 'título',
