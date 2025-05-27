@@ -31,4 +31,11 @@ class TaskController extends Controller
 
         return response()->json(TaskResource::collection($tasks));
     }
+
+    public function show(int $id): JsonResponse
+    {
+        $task = $this->taskService->show($id);
+
+        return response()->json(new TaskResource($task));
+    }
 }

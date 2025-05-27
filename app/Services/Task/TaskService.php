@@ -2,6 +2,7 @@
 
 namespace App\Services\Task;
 
+use App\Exceptions\NotFoundException;
 use App\Models\Task;
 use Illuminate\Support\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -34,5 +35,20 @@ class TaskService
     public function all(): Collection
     {
         return $this->task->with('user')->get();
+    }
+
+    public function show(int $id): Task
+    {
+        $task = $this->task->with('user')->find($id);
+
+        if (!$task) {
+            throw new NotFoundException(
+                __('errors.resource_not_found', ['resource' => 'Task']),
+                'RESOURCE_NOT_FOUND',
+                ['id' => $id]
+            );
+        }
+
+        return $task;
     }
 }
