@@ -290,4 +290,57 @@ class TaskControllerTest extends TestCase
 
         $this->assertEquals(1, DB::transactionLevel());
     }
+
+    public function test_destroy_with_successful(): void
+    {
+        $user = UserFactory::new()->create();
+
+        $task = TaskFactory::new()->stateUser($user)->create();
+
+        $response = $this->actingAs($user)->deleteJson("$this->url/$task->id");
+
+        $response->assertStatus(200);
+
+        $response->assertJson(['message' => 'Task deleted successfully']);
+
+        $this->assertDatabaseMissing('tasks', ['id' => $task->id]);
+    }
+
+    public function test_destroy_with_not_found(): void
+    {
+        $user = UserFactory::new()->create();
+
+        $response = $this->actingAs($user)->deleteJson("$this->url/9999");
+
+        $response->assertStatus(404);
+
+        $response->assertJson([
+            'message' => 'Task not found.',
+            'status' => 404,
+            'code' => 'RESOURCE_NOT_FOUND',
+            'details' => [
+                'id' => 9999,
+            ],
+        ]);
+    }
+
+    public function test_destroy_task_from_another_user(): void
+    {
+        $user = UserFactory::new()->create();
+
+        $task = TaskFactory::new()->create();
+
+        $response = $this->actingAs($user)->deleteJson("$this->url/$task->id");
+
+        $response->assertStatus(404);
+
+        $response->assertJson([
+            'message' => 'Task not found.',
+            'status' => 404,
+            'code' => 'RESOURCE_NOT_FOUND',
+            'details' => [
+                'id' => $task->id,
+            ],
+        ]);
+    }
 }
