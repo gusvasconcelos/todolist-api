@@ -5,9 +5,11 @@ namespace Tests\Feature\Http\Controllers;
 use Tests\TestCase;
 use App\Models\Task;
 use App\Enums\TaskStatusEnum;
+use BackedEnum;
 use Database\Factories\TaskFactory;
 use Database\Factories\UserFactory;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Facades\DB;
 
 class TaskControllerTest extends TestCase
 {
@@ -179,6 +181,8 @@ class TaskControllerTest extends TestCase
 
         $form = TaskFactory::new()->make()->setAppends([])->toArray();
 
+        unset($form['user_id']);
+
         $response = $this->actingAs($user)->postJson($this->url, $form);
 
         $task = Task::find($response->json('id'));
@@ -221,5 +225,69 @@ class TaskControllerTest extends TestCase
             ],
         ]);
     }
-}
 
+    public function test_update_with_successful(): void
+    {
+        $user = UserFactory::new()->create();
+
+        $task = TaskFactory::new()->stateUser($user)->create();
+
+        $form = TaskFactory::new()->make()->setAppends([])->toArray();
+
+        unset($form['user_id']);
+
+        $response = $this->actingAs($user)->putJson("$this->url/$task->id", $form);
+
+        $task = Task::find($response->json('id'));
+
+        $response->assertStatus(200);
+
+        foreach ($form as $key => $value) {
+            if ($task->{$key} instanceof BackedEnum) {
+                $this->assertEquals($task->{$key}->value, $value);
+
+                continue;
+            }
+
+            $this->assertEquals($task->{$key}, $value);
+        }
+    }
+
+    public function test_update_with_not_found(): void
+    {
+        $user = UserFactory::new()->create();
+
+        $response = $this->actingAs($user)->putJson("$this->url/9999", []);
+
+        $response->assertStatus(404);
+
+        $response->assertJson([
+            'message' => 'Task not found.',
+            'status' => 404,
+            'code' => 'RESOURCE_NOT_FOUND',
+            'details' => [
+                'id' => 9999,
+            ],
+        ]);
+    }
+
+    public function test_update_without_data_change(): void
+    {
+        $user = UserFactory::new()->create();
+
+        $task = TaskFactory::new()->stateUser($user)->create();
+
+        $response = $this->actingAs($user)->putJson("$this->url/$task->id", $task->toArray());
+
+        $response->assertStatus(200);
+
+        $response->assertJson([
+            'id' => $task->id,
+            'title' => $task->title,
+            'description' => $task->description,
+            'status' => $task->status->value,
+        ]);
+
+        $this->assertEquals(1, DB::transactionLevel());
+    }
+}
