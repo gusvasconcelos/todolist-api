@@ -105,4 +105,27 @@ class TaskControllerTest extends TestCase
 
         $this->assertPagination($response);
     }
+
+    public function test_all_tasks_with_successful(): void
+    {
+        $user = UserFactory::new()->create();
+
+        TaskFactory::new()->stateUser($user)->count(30)->create();
+
+        $response = $this->actingAs($user)->getJson($this->url . '/all');
+
+        $response->assertStatus(200);
+
+        $response->assertJsonStructure([
+            [
+                'id',
+                'title',
+                'description',
+                'status',
+                'user',
+                'created_at',
+                'updated_at',
+            ]
+        ]);
+    }
 }
