@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
 use App\Services\Task\TaskService;
 use App\Http\Resources\Task\TaskResource;
 use App\Http\Resources\PaginationResource;
 use App\Http\Requests\Task\TaskIndexRequest;
+use App\Http\Requests\Task\TaskStoreRequest;
 
 class TaskController extends Controller
 {
@@ -37,5 +39,14 @@ class TaskController extends Controller
         $task = $this->taskService->show($id);
 
         return response()->json(new TaskResource($task));
+    }
+
+    public function store(TaskStoreRequest $request): JsonResponse
+    {
+        $validated = $request->validated();
+
+        $task = $this->taskService->store(collect($validated));
+
+        return response()->json(new TaskResource($task), Response::HTTP_CREATED);
     }
 }

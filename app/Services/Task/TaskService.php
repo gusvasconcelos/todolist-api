@@ -51,4 +51,9 @@ class TaskService
 
         return $task;
     }
+
+    public function store(Collection $data): Task
+    {
+        return $this->task->create($data->toArray());
+    }
 }

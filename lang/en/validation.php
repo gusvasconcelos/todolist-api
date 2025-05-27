@@ -227,6 +227,11 @@ return [
         'state'     => 'state',
         'street'    => 'street',
         'subject'   => 'subject',
+        'task' => [
+            'title' => 'title',
+            'description' => 'description',
+            'status' => 'status',
+        ],
         'text'      => 'text',
         'time'      => 'time',
         'title'     => 'title',
