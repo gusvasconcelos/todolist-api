@@ -79,4 +79,19 @@ class TaskService
 
         return $task;
     }
+
+    public function destroy(int $id): bool
+    {
+        $task = $this->task->find($id);
+
+        if (!$task) {
+            throw new NotFoundException(
+                __('errors.resource_not_found', ['resource' => 'Task']),
+                'RESOURCE_NOT_FOUND',
+                ['id' => $id]
+            );
+        }
+
+        return $task->delete();
+    }
 }
