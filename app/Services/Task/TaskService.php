@@ -30,4 +30,9 @@ class TaskService
                 page: $data->get('page', 1),
             );
     }
+
+    public function all(): Collection
+    {
+        return $this->task->with('user')->get();
+    }
 }

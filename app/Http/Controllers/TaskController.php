@@ -24,4 +24,11 @@ class TaskController extends Controller
 
         return response()->json(new PaginationResource($tasks, TaskResource::class));
     }
+
+    public function all(): JsonResponse
+    {
+        $tasks = $this->taskService->all();
+
+        return response()->json(TaskResource::collection($tasks));
+    }
 }

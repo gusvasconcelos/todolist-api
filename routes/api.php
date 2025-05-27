@@ -17,6 +17,7 @@ Route::group([
             Route::get('me', [AuthController::class, 'me']);
         });
 
+        Route::get('tasks/all', [TaskController::class, 'all']);
         Route::apiResource('tasks', TaskController::class)->only(['index']);
     });
 });
