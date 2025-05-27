@@ -56,4 +56,27 @@ class TaskService
     {
         return $this->task->create($data->toArray());
     }
+
+    public function update(int $id, Collection $data): Task
+    {
+        $task = $this->task->find($id);
+
+        if (!$task) {
+            throw new NotFoundException(
+                __('errors.resource_not_found', ['resource' => 'Task']),
+                'RESOURCE_NOT_FOUND',
+                ['id' => $id]
+            );
+        }
+
+        $data = $data->diff($task->toArray());
+
+        if ($data->isEmpty()) {
+            return $task;
+        }
+
+        $task->update($data->toArray());
+
+        return $task;
+    }
 }

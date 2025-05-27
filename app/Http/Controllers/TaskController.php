@@ -9,6 +9,7 @@ use App\Http\Resources\Task\TaskResource;
 use App\Http\Resources\PaginationResource;
 use App\Http\Requests\Task\TaskIndexRequest;
 use App\Http\Requests\Task\TaskStoreRequest;
+use App\Http\Requests\Task\TaskUpdateRequest;
 
 class TaskController extends Controller
 {
@@ -48,5 +49,14 @@ class TaskController extends Controller
         $task = $this->taskService->store(collect($validated));
 
         return response()->json(new TaskResource($task), Response::HTTP_CREATED);
+    }
+
+    public function update(TaskUpdateRequest $request, int $id): JsonResponse
+    {
+        $validated = $request->validated();
+
+        $task = $this->taskService->update($id, collect($validated));
+
+        return response()->json(new TaskResource($task));
     }
 }
