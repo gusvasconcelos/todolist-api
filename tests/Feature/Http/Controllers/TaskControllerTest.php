@@ -2,8 +2,9 @@
 
 namespace Tests\Feature\Http\Controllers;
 
-use App\Enums\TaskStatusEnum;
 use Tests\TestCase;
+use App\Models\Task;
+use App\Enums\TaskStatusEnum;
 use Database\Factories\TaskFactory;
 use Database\Factories\UserFactory;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -171,4 +172,54 @@ class TaskControllerTest extends TestCase
             ],
         ]);
     }
+
+    public function test_store_with_successful(): void
+    {
+        $user = UserFactory::new()->create();
+
+        $form = TaskFactory::new()->make()->setAppends([])->toArray();
+
+        $response = $this->actingAs($user)->postJson($this->url, $form);
+
+        $task = Task::find($response->json('id'));
+
+        $response->assertStatus(201);
+
+        $response->assertJson([
+            'id' => $task->id,
+            'title' => $task->title,
+            'description' => $task->description,
+            'status' => $task->status->value,
+        ]);
+
+        $this->assertEquals($task->user_id, $user->id);
+    }
+
+    public function test_store_with_validation_error(): void
+    {
+        $user = UserFactory::new()->create();
+
+        $form = [
+            'status' => 'invalid_status',
+        ];
+
+        $response = $this->actingAs($user)->postJson($this->url, $form);
+
+        $response->assertStatus(422);
+
+        $response->assertJson([
+            'message' => __('errors.validation'),
+            'status' => 422,
+            'code' => 'VALIDATION',
+            'details' => [
+                'title' => [
+                    __('validation.required', ['attribute' => __('validation.attributes.task.title')]),
+                ],
+                'status' => [
+                    __('validation.enum', ['attribute' => __('validation.attributes.task.status'), 'enum' => TaskStatusEnum::class]),
+                ],
+            ],
+        ]);
+    }
 }
+
