@@ -128,4 +128,47 @@ class TaskControllerTest extends TestCase
             ]
         ]);
     }
+
+    public function test_show_with_successful(): void
+    {
+        $user = UserFactory::new()->create();
+
+        $task = TaskFactory::new()->stateUser($user)->create();
+
+        $response = $this->actingAs($user)->getJson("$this->url/$task->id");
+
+        $response->assertStatus(200);
+
+        $response->assertJson([
+            'id' => $task->id,
+            'title' => $task->title,
+            'description' => $task->description,
+            'status' => $task->status->value,
+            'user' => [
+                'id' => $task->user->id,
+                'name' => $task->user->name,
+                'email' => $task->user->email,
+            ],
+            'created_at' => $task->created_at->toISOString(),
+            'updated_at' => $task->updated_at->toISOString(),
+        ]);
+    }
+
+    public function test_show_with_not_found(): void
+    {
+        $user = UserFactory::new()->create();
+
+        $response = $this->actingAs($user)->getJson("$this->url/9999");
+
+        $response->assertStatus(404);
+
+        $response->assertJson([
+            'message' => 'Task not found.',
+            'status' => 404,
+            'code' => 'RESOURCE_NOT_FOUND',
+            'details' => [
+                'id' => 9999,
+            ],
+        ]);
+    }
 }
