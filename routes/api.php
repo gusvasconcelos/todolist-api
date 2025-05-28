@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\NewsController;
 use App\Http\Controllers\TaskController;
 
 Route::group([
@@ -19,5 +20,7 @@ Route::group([
 
         Route::get('tasks/all', [TaskController::class, 'all']);
         Route::apiResource('tasks', TaskController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
+
+        Route::get('news/articles', [NewsController::class, 'getArticles']);
     });
 });
