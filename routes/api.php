@@ -9,7 +9,7 @@ Route::group([
     'prefix' => 'v1'
 ], function () {
     Route::group([
-        'middleware' => 'api',
+        'middleware' => 'jwt.auth',
     ], function () {
         Route::prefix('auth')->group(function () {
             Route::post('login', [AuthController::class, 'login'])->withoutMiddleware('api');
