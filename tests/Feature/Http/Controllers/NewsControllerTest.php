@@ -4,14 +4,18 @@ namespace Tests\Feature\Http\Controllers;
 
 use Carbon\Carbon;
 use Tests\TestCase;
+use Tests\Mocks\NewsApiMock;
+use Illuminate\Support\Facades\Http;
 
 class NewsControllerTest extends TestCase
 {
     public function test_get_articles_with_q()
     {
-        $response = $this->get('/api/v1/news/articles?q=bitcoin');
+        Http::fake([
+            'https://newsapi.org/v2/everything' => NewsApiMock::mockSuccessfulResponse(),
+        ]);
 
-        dd($response->getContent());
+        $response = $this->get('/api/v1/news/articles?q=bitcoin');
 
         $response->assertStatus(200);
 
@@ -29,6 +33,10 @@ class NewsControllerTest extends TestCase
 
     public function test_get_articles_with_sources()
     {
+        Http::fake([
+            'https://newsapi.org/v2/everything' => NewsApiMock::mockSuccessfulResponse(),
+        ]);
+
         $response = $this->get('/api/v1/news/articles?sources[]=bbc-news');
 
         $response->assertStatus(200);
@@ -47,6 +55,10 @@ class NewsControllerTest extends TestCase
 
     public function test_get_articles_with_domains()
     {
+        Http::fake([
+            'https://newsapi.org/v2/everything' => NewsApiMock::mockSuccessfulResponse(),
+        ]);
+
         $response = $this->get('/api/v1/news/articles?domains[]=bbc.co.uk');
 
         $response->assertStatus(200);
@@ -65,6 +77,10 @@ class NewsControllerTest extends TestCase
 
     public function test_get_articles_with_exclude_domains()
     {
+        Http::fake([
+            'https://newsapi.org/v2/everything' => NewsApiMock::mockSuccessfulResponse(),
+        ]);
+
         $response = $this->get('/api/v1/news/articles?q=yamal&excludeDomains[]=espn.com');
 
         $response->assertStatus(200);
@@ -89,6 +105,10 @@ class NewsControllerTest extends TestCase
 
     public function test_get_articles_with_from_and_to()
     {
+        Http::fake([
+            'https://newsapi.org/v2/everything' => NewsApiMock::mockSuccessfulResponse(),
+        ]);
+
         $today = Carbon::now()->format('Y-m-d');
 
         $response = $this->get("/api/v1/news/articles?q=bitcoin&from={$today}&to={$today}");
@@ -109,6 +129,10 @@ class NewsControllerTest extends TestCase
 
     public function test_get_articles_with_sort_by()
     {
+        Http::fake([
+            'https://newsapi.org/v2/everything' => NewsApiMock::mockSuccessfulResponse(),
+        ]);
+
         $response = $this->get('/api/v1/news/articles?q=bitcoin&sortBy=relevancy');
 
         $response->assertStatus(200);
@@ -127,6 +151,10 @@ class NewsControllerTest extends TestCase
 
     public function test_get_articles_with_language()
     {
+        Http::fake([
+            'https://newsapi.org/v2/everything' => NewsApiMock::mockSuccessfulResponse(),
+        ]);
+
         $response = $this->get('/api/v1/news/articles?q=bitcoin&language=pt');
 
         $response->assertStatus(200);
@@ -145,6 +173,10 @@ class NewsControllerTest extends TestCase
 
     public function test_get_articles_with_page_and_page_size()
     {
+        Http::fake([
+            'https://newsapi.org/v2/everything' => NewsApiMock::mockSuccessfulResponse(),
+        ]);
+
         $response = $this->get('/api/v1/news/articles?q=bitcoin&page=1&pageSize=2');
 
         $response->assertStatus(200);
