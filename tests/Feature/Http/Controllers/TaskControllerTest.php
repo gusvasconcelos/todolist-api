@@ -23,7 +23,7 @@ class TaskControllerTest extends TestCase
 
         TaskFactory::new()->stateUser($user)->count(30)->create();
 
-        $response = $this->actingAs($user)->getJson($this->url);
+        $response = $this->actingAsUser($user)->getJson($this->url);
 
         $response->assertStatus(200);
 
@@ -38,7 +38,7 @@ class TaskControllerTest extends TestCase
 
         $filter = TaskStatusEnum::PENDING->value;
 
-        $response = $this->actingAs($user)->getJson($this->url . '?status=' . $filter);
+        $response = $this->actingAsUser($user)->getJson($this->url . '?status=' . $filter);
 
         $response
             ->assertStatus(200)
@@ -57,7 +57,7 @@ class TaskControllerTest extends TestCase
 
         $filter = TaskStatusEnum::IN_PROGRESS->value;
 
-        $response = $this->actingAs($user)->getJson($this->url . '?status=' . $filter);
+        $response = $this->actingAsUser($user)->getJson($this->url . '?status=' . $filter);
 
         $response
             ->assertStatus(200)
@@ -76,7 +76,7 @@ class TaskControllerTest extends TestCase
 
         $filter = TaskStatusEnum::CONCLUDED->value;
 
-        $response = $this->actingAs($user)->getJson($this->url . '?status=' . $filter);
+        $response = $this->actingAsUser($user)->getJson($this->url . '?status=' . $filter);
 
         $response
             ->assertStatus(200)
@@ -97,7 +97,7 @@ class TaskControllerTest extends TestCase
 
         $perPage = 10;
 
-        $response = $this->actingAs($user)->getJson($this->url . '?page=' . $page . '&per_page=' . $perPage);
+        $response = $this->actingAsUser($user)->getJson($this->url . '?page=' . $page . '&per_page=' . $perPage);
 
         $response
             ->assertStatus(200)
@@ -115,7 +115,7 @@ class TaskControllerTest extends TestCase
 
         TaskFactory::new()->stateUser($user)->count(30)->create();
 
-        $response = $this->actingAs($user)->getJson($this->url . '/all');
+        $response = $this->actingAsUser($user)->getJson($this->url . '/all');
 
         $response->assertStatus(200);
 
@@ -138,7 +138,7 @@ class TaskControllerTest extends TestCase
 
         $task = TaskFactory::new()->stateUser($user)->create();
 
-        $response = $this->actingAs($user)->getJson("$this->url/$task->id");
+        $response = $this->actingAsUser($user)->getJson("$this->url/$task->id");
 
         $response->assertStatus(200);
 
@@ -161,7 +161,7 @@ class TaskControllerTest extends TestCase
     {
         $user = UserFactory::new()->create();
 
-        $response = $this->actingAs($user)->getJson("$this->url/9999");
+        $response = $this->actingAsUser($user)->getJson("$this->url/9999");
 
         $response->assertStatus(404);
 
@@ -183,7 +183,7 @@ class TaskControllerTest extends TestCase
 
         unset($form['user_id']);
 
-        $response = $this->actingAs($user)->postJson($this->url, $form);
+        $response = $this->actingAsUser($user)->postJson($this->url, $form);
 
         $task = Task::find($response->json('id'));
 
@@ -207,7 +207,7 @@ class TaskControllerTest extends TestCase
             'status' => 'invalid_status',
         ];
 
-        $response = $this->actingAs($user)->postJson($this->url, $form);
+        $response = $this->actingAsUser($user)->postJson($this->url, $form);
 
         $response->assertStatus(422);
 
@@ -236,7 +236,7 @@ class TaskControllerTest extends TestCase
 
         unset($form['user_id']);
 
-        $response = $this->actingAs($user)->putJson("$this->url/$task->id", $form);
+        $response = $this->actingAsUser($user)->putJson("$this->url/$task->id", $form);
 
         $task = Task::find($response->json('id'));
 
@@ -257,7 +257,7 @@ class TaskControllerTest extends TestCase
     {
         $user = UserFactory::new()->create();
 
-        $response = $this->actingAs($user)->putJson("$this->url/9999", []);
+        $response = $this->actingAsUser($user)->putJson("$this->url/9999", []);
 
         $response->assertStatus(404);
 
@@ -277,7 +277,7 @@ class TaskControllerTest extends TestCase
 
         $task = TaskFactory::new()->stateUser($user)->create();
 
-        $response = $this->actingAs($user)->putJson("$this->url/$task->id", $task->toArray());
+        $response = $this->actingAsUser($user)->putJson("$this->url/$task->id", $task->toArray());
 
         $response->assertStatus(200);
 
@@ -297,7 +297,7 @@ class TaskControllerTest extends TestCase
 
         $task = TaskFactory::new()->stateUser($user)->create();
 
-        $response = $this->actingAs($user)->deleteJson("$this->url/$task->id");
+        $response = $this->actingAsUser($user)->deleteJson("$this->url/$task->id");
 
         $response->assertStatus(200);
 
@@ -310,7 +310,7 @@ class TaskControllerTest extends TestCase
     {
         $user = UserFactory::new()->create();
 
-        $response = $this->actingAs($user)->deleteJson("$this->url/9999");
+        $response = $this->actingAsUser($user)->deleteJson("$this->url/9999");
 
         $response->assertStatus(404);
 
@@ -330,7 +330,7 @@ class TaskControllerTest extends TestCase
 
         $task = TaskFactory::new()->create();
 
-        $response = $this->actingAs($user)->deleteJson("$this->url/$task->id");
+        $response = $this->actingAsUser($user)->deleteJson("$this->url/$task->id");
 
         $response->assertStatus(404);
 

@@ -10,11 +10,12 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Tymon\JWTAuth\Exceptions\TokenExpiredException;
+use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
-use Tymon\JWTAuth\Exceptions\TokenExpiredException;
-use Tymon\JWTAuth\Exceptions\TokenInvalidException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -110,6 +111,12 @@ return Application::configure(basePath: dirname(__DIR__))
                     401,
                     'AUTH_JWT_ERROR'
                 )
+            )->toJson();
+        });
+
+        $exceptions->render(function (UnauthorizedHttpException $e) {
+            return (
+                new ErrorResponse($e, __('errors.unauthorized'), 401, 'UNAUTHORIZED')
             )->toJson();
         });
 
