@@ -101,7 +101,7 @@ class AuthControllerTest extends TestCase
         $response
             ->assertStatus(401)
             ->assertJson([
-                'message' => __('messages.auth.not_authenticated'),
+                'message' => __('errors.unauthorized'),
                 'status' => 401,
                 'code' => 'UNAUTHORIZED',
             ]);
@@ -127,9 +127,9 @@ class AuthControllerTest extends TestCase
         $response
             ->assertStatus(401)
             ->assertJson([
-                'message' => __('errors.auth_jwt_error'),
+                'message' => __('errors.unauthorized'),
                 'status' => 401,
-                'code' => 'AUTH_JWT_ERROR'
+                'code' => 'UNAUTHORIZED'
             ]);
     }
 
@@ -155,9 +155,9 @@ class AuthControllerTest extends TestCase
         $response
             ->assertStatus(401)
             ->assertJson([
-                'message' => __('errors.auth_jwt_error'),
+                'message' => __('errors.unauthorized'),
                 'status' => 401,
-                'code' => 'AUTH_JWT_ERROR'
+                'code' => 'UNAUTHORIZED'
             ]);
     }
 }
