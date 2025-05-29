@@ -129,7 +129,7 @@ GET /api/v1/news/articles?q=bitcoin&language=pt&sortBy=publishedAt
 ### Pré-requisitos
 - PHP 8.2+
 - Composer
-- PostgreSQL
+- PostgreSQL ou MySQL
 - Conta na [News API](https://newsapi.org/)
 
 ### Passos de instalação
